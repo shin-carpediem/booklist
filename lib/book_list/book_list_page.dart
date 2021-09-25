@@ -3,7 +3,9 @@
 import 'package:booklist/add_book/add_book_page.dart';
 import 'package:booklist/book_list/book_list_model.dart';
 import 'package:booklist/domain/book.dart';
+import 'package:booklist/edit_book/edit_book_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
 // ignore: use_key_in_widget_constructors
@@ -26,9 +28,53 @@ class BookListPage extends StatelessWidget {
 
               final widgets = books
                   .map(
-                    (book) => ListTile(
-                      title: Text(book.title),
-                      subtitle: Text(book.author),
+                    (book) => Slidable(
+                      actionPane: SlidableDrawerActionPane(),
+                      child: ListTile(
+                        title: Text(book.title),
+                        subtitle: Text(book.author),
+                      ),
+                      secondaryActions: <Widget>[
+                        Container(
+                          height: 800,
+                          color: Colors.green,
+                          child: Text('a'),
+                        ),
+                        IconSlideAction(
+                          caption: '編集',
+                          color: Colors.grey.shade200,
+                          icon: Icons.edit,
+                          onTap: () async {
+                            // 編集画面に遷移
+                            // 画面遷移
+                            final String? title = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditBookPage(book),
+                              ),
+                            );
+
+                            if (title != null) {
+                              final snackBar = SnackBar(
+                                backgroundColor: Colors.green,
+                                content: Text('$titleを編集しました'),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            }
+
+                            model.fetchBookList();
+                          },
+                          closeOnTap: false,
+                        ),
+                        IconSlideAction(
+                            caption: '削除',
+                            color: Colors.red,
+                            icon: Icons.delete,
+                            onTap: () {
+                              // 削除しますかと聞き、はいだったら削除
+                            }),
+                      ],
                     ),
                   )
                   .toList();
