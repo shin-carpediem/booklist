@@ -31,15 +31,12 @@ class BookListPage extends StatelessWidget {
                     (book) => Slidable(
                       actionPane: SlidableDrawerActionPane(),
                       child: ListTile(
+                        leading:
+                            book.img != null ? Image.network(book.img!) : null,
                         title: Text(book.title),
                         subtitle: Text(book.author),
                       ),
                       secondaryActions: <Widget>[
-                        Container(
-                          height: 800,
-                          color: Colors.green,
-                          child: Text('a'),
-                        ),
                         IconSlideAction(
                           caption: '編集',
                           color: Colors.grey.shade200,
