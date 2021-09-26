@@ -71,8 +71,9 @@ class BookListPage extends StatelessWidget {
                             caption: '削除',
                             color: Colors.red,
                             icon: Icons.delete,
-                            onTap: () {
+                            onTap: () async {
                               // 削除しますかと聞き、はいだったら削除
+                              await showConfirmDialog(context, book, model);
                             }),
                       ],
                     ),
@@ -109,5 +110,43 @@ class BookListPage extends StatelessWidget {
             );
           }),
         ));
+  }
+
+  Future showConfirmDialog(
+    BuildContext context,
+    Book book,
+    BookListModel model,
+  ) {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return AlertDialog(
+          title: Text("削除の確認"),
+          content: Text("『${book.title}』を削除しますか？"),
+          actions: [
+            TextButton(
+              child: Text("いいえ"),
+              onPressed: () => Navigator.pop(context),
+            ),
+            TextButton(
+              child: Text("はい"),
+              onPressed: () async {
+                // modelで削除
+                await model.delete(book);
+                Navigator.pop(context);
+
+                final snackBar = SnackBar(
+                  backgroundColor: Colors.red,
+                  content: Text('『${book.title}』を削除しました'),
+                );
+                model.fetchBookList();
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
